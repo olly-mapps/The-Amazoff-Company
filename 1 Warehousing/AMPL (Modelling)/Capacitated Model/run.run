@@ -1,0 +1,18 @@
+reset; 
+
+model model.mod;
+data data.dat;
+data f_loc.dat;
+data c_loc.dat;
+
+option cplex_options 'mipdisplay 3 mipgap 0.0005';
+
+option solver cplex;
+
+solve;
+
+display facility;
+
+display assign;
+
+display open_cost;

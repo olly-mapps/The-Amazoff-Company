@@ -1,0 +1,34 @@
+---
+title: "Demand Generation"
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+---
+
+Contained in this notebook is the generation of the demands 60 customers.
+
+As required, we set the seed to 1, to allow for the reproducability of our results
+
+```{r}
+set.seed(1)
+```
+
+
+We are required to generate 60 demands, drawn uniformly, between 1 and 25.
+
+```{r}
+#Generate 60 random variables between 1 and 25
+demands <- data.frame(round(runif(60, min = 1, max = 25)))
+```
+
+We next assign the each demand and customer, for ease of use in AMPL, and write the output to a csv file.
+
+```{r}
+#Assign row names
+row.names(demands) <- paste0("c", 1:60)
+
+#Write output to csv file
+write.csv(demands, "demand_data/demands.csv", row.names = T)
+```
+

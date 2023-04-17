@@ -1,2 +1,4 @@
-# MA324-Summative
-MA324 Individual Project
+# The Amazoff Company
+
+Modelling and Optimising the operations of the Amazoff Company
+

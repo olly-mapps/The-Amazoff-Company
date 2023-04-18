@@ -1,0 +1,14 @@
+reset;
+
+model model.mod;
+data data.dat;
+data locations.dat;
+
+option cplex_options 'mipdisplay 3 mipgap 0.0005';
+
+option solver cplex;
+
+solve;
+
+display on_route;
+

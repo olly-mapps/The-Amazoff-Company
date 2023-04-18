@@ -36,8 +36,8 @@ One_Assignment {i in Customers}:
 Open_Facility {i in Customers, j in Facilities}:
     assign[i,j] <= facility[j];
     
-Customer_Demand {f in Facilities}:
-	sum{c in Customers} demands[c] * assign[c,f] <= capacity[f]*facility[f];
+Customer_Demand {j in Facilities}:
+	sum{i in Customers} demands[i] * assign[i,j] <= capacity[j] * facility[j];
  
  
 	

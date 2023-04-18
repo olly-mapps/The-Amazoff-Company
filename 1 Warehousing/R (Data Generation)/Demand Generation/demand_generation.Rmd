@@ -14,7 +14,6 @@ As required, we set the seed to 1, to allow for the reproducability of our resul
 set.seed(1)
 ```
 
-
 We are required to generate 60 demands, drawn uniformly, between 1 and 25.
 
 ```{r}

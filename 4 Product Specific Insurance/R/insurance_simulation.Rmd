@@ -1,0 +1,44 @@
+---
+title: "Product Specific Insurance"
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+---
+
+Contained in this notebook is the product specific insurance simulation
+
+As required, we first set the seed to 0, for reproducability of our results.
+
+```{r}
+set.seed(1)
+```
+
+# Function Definitions
+
+```{r}
+poisson_gen <- function(t) {
+  return(1/12+t) 
+}
+```
+
+# Simulation 
+
+We are first given some parameters, which are initialised below
+
+```{r}
+n_0 <- 0
+
+t_A <- 
+t_D < Inf
+```
+
+```{r}
+for (i in range(1000){
+  
+  if ((t_A =< t_D)) {
+    
+  }
+}
+```
+

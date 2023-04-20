@@ -48,56 +48,108 @@ next_dep <- function(t, lambda) {
 }
 ```
 
+```{r}
+new_month <- function(t, months) {
+  if (floor(t) %in% months) {
+    return(FALSE)
+  } else {
+    return(TRUE)
+  }
+}
+```
+
 # Simulation 
 
-We are first given some parameters, which are initialised below
+We are first given some parameters, which are initialized below
 
 ```{r}
-S <- c()
+#Monthly poisson process parameter for arrivals
+lambda <- 3
+
+#Yearly poisson process parameter for claims
+alpha <- 3.5
+
+#Starting capital
+c_0 <- 50000
+
+#Capital floor
+C <- 30000
+  
+#Fixed monthly fee
+M <- 300
 ```
 
-```{r}
-t <- next_pois(t, lambda)
-L <- 1000
-```
 
 ```{r}
-S <- c()
+### Output Variables ################################
+
+#We first define a list which records if the firm went below the threshold C.
+B <- c()
+
+
+
+
+### Main Loop ########################################
+
+#We next define a for loop, so we run the simulation for 1000 iterations.
+
 for (k in 1:1000) {
   
-  n_0 <- 1
-  c_0 <- 50000
+### Starting Parameters #################
   
-  C <- 30000
-  
-  M <- 300
-  
+  #Start at time 0
   t <- 0
-  t_A <- 0
-  t_D <- Inf
-  t_C <- c(Inf)
-  total_t <- 12
+    
+  #Number of arrivals by time t
+  n_A <- 0
   
-  n_A <- 1
+  #Number of departures by time t
   n_D <- 0
+  
+  #Number of claims by time t
   n_C <- 0
   
+  #We run simulation for 12 months
+  total_t <- 12
+  
+### State variables ######################
+  
+  #Number of customers currently in system
+  n_0 <- 0
+  
+  #Defines our current cost accrued
   cost <- 0
+  
+  #Defines our current revenue generated
   rev <- 0
   
-  lambda <- 3
-  alpha <- 3.5
+  #Describes what month we are currently in
+  months <- c(0)
   
-  t <- next_pois(t, lambda)
+### Event variables ######################
   
-  while(t<=total_t){
+  #Define time of next arrival from Poisson process 
+  t_A <- next_pois(t, lambda)
+  
+  #Define time of next departure
+  t_D <- Inf
+  
+  #Define list of next claims
+  t_C <- c(Inf)
+  
+### 12 Month Loop ########################
+
+  while(t <= total_t){
     
-    #Update revenue
-    
-    rev <- rev + M*n_0
+    #Calculate whether we are in new month yet
+    if (new_month(t, months)) {
+      
+      #If yes, then add monthly income to revenue
+      months <- c(months, floor(t))
+      rev <- rev + M*n_0
+    }
     
     #If there is arrival
-      
     if ((t_A <= t_D) & (all(t_A <= t_C))){
       
       #Set time to time of next arrival
@@ -123,7 +175,6 @@ for (k in 1:1000) {
     }
     
     #If there is a departure
-    
     else if ((t_D < t_A) & all((t_D < t_C))) {
       
       #Set time to time of next departure
@@ -140,7 +191,6 @@ for (k in 1:1000) {
     }
     
     #If there is a claim
-    
     else if (any((t_C < t_A)) & any((t_C < t_D))){
       
       #Set time to time of next claim
@@ -172,16 +222,43 @@ for (k in 1:1000) {
     }
   }
   
- if ((c_0 - cost + rev) <= C) {
-   S <- c(S,1)
- } else{
-   S <- c(S,0)
- }
-
+  #Checks if they are below the threshold
+  if ((c_0 - cost + rev) <= C) {
+   
+    #If they are, add a 1 to the list
+    B <- c(B,1)
+  } else{
+    
+    #If they are not, add a 0 to the list
+    B <- c(B,0)
+  }
+  
 }
 ```
 
+# Output Analysis
+
+## Estimation of `P`
+
+In this section we estimate `P`, that is, the probability of the capital at the end of the 12 months going beneath C
+
+We first examine our output B, we see there is a pretty even distribution of 1s and 0s. 
 ```{r}
-S
+B
 ```
+For an exact answer, we count the number of 1s, which imply a simulation where the company dropped below C, and divide it by the amount of simulations ran.
+
+```{r}
+#Count values of 1s, the function stores the 1s count at index 2
+value_count <- table(B)
+
+#Calculate P as described above
+P <- value_count[2] / length(B)
+
+#Output P
+P
+```
+We observe a probability of 0.428, just below half.
+
+
 

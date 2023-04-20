@@ -94,13 +94,14 @@ M <- 300
 ```{r}
 ### Output Variables ################################
 
-k <- 1
-
-
+k_90 <- 0 
+C_12_90 <- 0
+S_sq_90 <- 0
 
 ### Other Initialisations ############################
 
 #We need to initialise the first variance, that being 0
+
 S_sq <- 0
 
 #And the start of the counter
@@ -110,9 +111,9 @@ k <- 1
 
 ### Main Loop ########################################
 
-#We next define a for loop, so we run the simulation for 1000 iterations.
+#We next define a while loop, so we run the simulation for 3000 iterations.
 
-while (sqrt(S_sq/k) > (500/1.645)) {
+while (k < 3000) {
   
 ### Starting Parameters #################
   
@@ -160,6 +161,7 @@ while (sqrt(S_sq/k) > (500/1.645)) {
 
   while(t <= total_t){
     
+    #Here we check we have not entered a new month yet
     if (new_month(t, months)) {
       months <- c(months, floor(t))
       rev <- rev + M*n_0
@@ -241,53 +243,43 @@ while (sqrt(S_sq/k) > (500/1.645)) {
     }
   }
   
-  #Checks if they are below the threshold
-  if ((c_0 - cost + rev) <= C) {
-   
-    #If they are, add a 1 to the list
-    B <- c(B,1)
-  } else{
-    
-    #If they are not, add a 0 to the list
-    B <- c(B,0)
-  }
+  ### Estimation Section ###
   
+  #We first our simulated capital at the end of 12 months
   C_12 <- (c_0 - cost + rev)
   
+  #If it is the first iteration, we set the sample mean to our first estimate
+  if (k == 1){
+    C_12_bar <- C_12
+  }
+  
+  #We now generate our next sample mean and variance
   out <- gen_sample_mean_var(k, C_12, C_12_bar, S_sq)
   
+  #We then retrieve these values
   C_12_bar <- out[1]
   S_sq <- out[2]
   
-  print(S_sq)
+  #We then print this to assess convergence
+  #print(sqrt(S_sq/k))
   
+  #We then check we have satisfied our requirements for confidence interval, the last condition ensures we     record only the first time we satisfy this requirement
+  
+  if (sqrt(S_sq/k) < (500/1.645) & k != 1 & (C_12_90+k_90+S_sq_90 == 0)){
+    
+    #We then collect our output values
+    C_12_90 <- C_12_bar
+    k_90 <- k
+    S_sq_90 <- S_sq
+  }
+  
+  #We then add to counter
   k <- k+1
+  
 }
 ```
 
 # Output Analysis
-
-## Estimation of `P`
-
-In this section we estimate `P`, that is, the probability of the capital at the end of the 12 months going beneath C
-
-We first examine our output B, we see there is a pretty even distribution of 1s and 0s. 
-```{r}
-B
-```
-For an exact answer, we count the number of 1s, which imply a simulation where the company dropped below C, and divide it by the amount of simulations ran.
-
-```{r}
-#Count values of 1s, the function stores the 1s count at index 2
-value_count <- table(B)
-
-#Calculate P as described above
-P <- value_count[2] / length(B)
-
-#Output P
-P
-```
-We observe a probability of 0.428, just below half
 
 ## Estimation of `C_12`
 
@@ -306,6 +298,15 @@ C_12_90
 k_90
 S_sq_90 
 ```
+From here, we calculate our final standard deviation
 
+```{r}
+S_90 <- sqrt(S_sq_90/k_90)
+S_90
+```
+
+So we on the 2538th iteration, we achieved our estimate of 27375.34. Our estimator has a standard deviation of 303.95.
+
+From here, we use the z-score of 1.96 to calculate an interval that we can be 95% our true value is in. With our standard deviation of 303.95, we find calculate 1.96*303.95. So our interval is +/- 595.06.
 
 

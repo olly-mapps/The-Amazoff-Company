@@ -258,7 +258,7 @@ P <- value_count[2] / length(B)
 #Output P
 P
 ```
-We observe a probability of 0.428, just below half.
+We observe a probability of 0.523, just above half.
 
 
 

@@ -18,7 +18,7 @@ We are required to generate 60 demands, drawn uniformly, between 1 and 25.
 
 ```{r}
 #Generate 60 random variables between 1 and 25
-demands <- data.frame(round(runif(60, min = 1, max = 25)))
+demands <- data.frame(ceiling(25*runif(60)))
 ```
 
 We next assign the each demand and customer, for ease of use in AMPL, and write the output to a csv file.

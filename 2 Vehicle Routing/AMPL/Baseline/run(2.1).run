@@ -1,0 +1,14 @@
+reset;
+
+model model(2.1).mod;
+data data(2.1).dat;
+data locations(2.1).dat;
+
+option cplex_options 'mipdisplay 3 mipgap 0.0005';
+
+option solver cplex;
+
+solve;
+
+display Total_Cost, on_route > "out(2.1).txt";
+

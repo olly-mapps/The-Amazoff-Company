@@ -1,0 +1,12 @@
+data; 
+					
+set c_Customers := c16	c23	c35	c55	c13	c54	c57	c40	c38	c4	
+					c11	c42	c24	c47	c30	c44	c60	c8	c17	c1	
+					c53	c21	c29	c36	c12;
+
+					
+set Depots := d1;
+										
+
+					
+					

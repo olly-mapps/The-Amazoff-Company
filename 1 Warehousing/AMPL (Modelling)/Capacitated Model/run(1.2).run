@@ -1,0 +1,15 @@
+reset; 
+
+model model(1.2).mod;
+data data(1.2).dat;
+data f_loc(1.2).dat;
+data c_loc(1.2).dat;
+
+option cplex_options 'mipdisplay 3 mipgap 0.0005';
+
+option solver cplex;
+
+solve;
+
+display facility, assign, Total_Cost > "out(1.2).txt";
+

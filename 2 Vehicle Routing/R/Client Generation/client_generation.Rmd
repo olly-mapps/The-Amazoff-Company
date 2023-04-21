@@ -26,7 +26,7 @@ composite_clients <- c()
 while (length(unique(composite_clients)) < 25) {
   
   #Randomly generate a number between 1 and 60
-  client <- floor(runif(1, min = 1, max = 60))
+  client <- ceiling(60*runif(1))
   
   #Append this number to the composite_clients list
   composite_clients <- c(composite_clients, client)
@@ -61,7 +61,7 @@ composite_c_x <- c_x[c_x$X %in% composite_clients, ]
 composite_c_y <- c_y[c_y$X %in% composite_clients, ]
 
 #We then write the x and y coordinates to new csvs
-write.csv(composite_c_x, "grid_data/c_c_x.csv", row.names = T)
-write.csv(composite_c_y, "grid_data/c_c_y.csv", row.names = T)
+write.csv(composite_c_x, "client_data/comp_c_x.csv", row.names = T)
+write.csv(composite_c_y, "client_data/comp_c_y.csv", row.names = T)
 ```
 

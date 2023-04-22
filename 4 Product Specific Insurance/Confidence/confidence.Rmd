@@ -8,7 +8,7 @@ output:
 
 Contained in this notebook is the product specific insurance simulation
 
-As required, we first set the seed to 0, for re-producability of our results.
+As required, we first set the seed to 0, for re-producability of our results. 
 
 ```{r}
 set.seed(1)

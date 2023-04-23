@@ -27,16 +27,16 @@ p<-21
 n_f <- 15
 n_c <- 60
 
-#Define 20^2 uniform random variables, in a 20x20 matrix
+#Define 20^2 uniform random variables, in a 21x21 matrix
 unif_grid <- matrix(runif(p^2), nrow = p, ncol = p)
 
-#Define a vector of zeros, of length 20^2
+#Define a vector of zeros, of length 21^2
 grid <- numeric(p^2)
 
-#Sort the matrix of the uniform variables, and set the top 15 variables indexes equal to 1 in the grid of zeros 
+#Sort the matrix of the uniform variables, and set the top 15 variables indexes equal to f in the grid of zeros 
 grid[order(unif_grid, decreasing = TRUE)[1:n_f]] <- "f"
 
-#Sort the matrix of the uniform variables, and set the next top 60 variables indexes equal to 2 in the grid of zeros
+#Sort the matrix of the uniform variables, and set the next top 60 variables indexes equal to c in the grid of zeros
 grid[order(unif_grid, decreasing = TRUE)[(n_f+1):(n_c+n_f)]] <- "c"
 
 #Reshape grid to be a 20x20 matrix

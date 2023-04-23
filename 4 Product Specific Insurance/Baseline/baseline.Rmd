@@ -269,7 +269,7 @@ We observe a probability of 0.523, just above half.
 
 # Plots 
 
-## Bar Plot
+## Bar Plot (M = 300)
 
 We first rename column names to make visualization clearer
 
@@ -284,5 +284,47 @@ plot_1 <- ggplot(data = value_count, aes(x = Outcome, y = Simulations)) +
 
 plot_1
 ```
-## Distrubution 
+## Bar Plot (M=400)
+
+```{r}
+value_count <- as.data.frame(value_count) %>% rename("Outcome" = B, "Simulations" = Freq)
+```
+
+```{r}
+plot_2 <- ggplot(data = value_count, aes(x = Outcome, y = Simulations)) +
+          geom_bar(stat = 'identity', fill = "#00BFC4") +
+          scale_x_discrete(labels=c("0" = "Above Threshold", "1" = "Below Threshold"))
+
+plot_2
+```
+
+
+## Bar Plot (M=350)
+
+```{r}
+value_count <- as.data.frame(value_count) %>% rename("Outcome" = B, "Simulations" = Freq)
+```
+
+```{r}
+plot_3 <- ggplot(data = value_count, aes(x = Outcome, y = Simulations)) +
+          geom_bar(stat = 'identity', fill = "#00BFC4") +
+          scale_x_discrete(labels=c("0" = "Above Threshold", "1" = "Below Threshold"))
+
+plot_3
+```
+## Bar Plot (M=500)
+
+```{r}
+value_count <- as.data.frame(value_count) %>% rename("Outcome" = B, "Simulations" = Freq)
+```
+
+```{r}
+plot_4 <- ggplot(data = value_count, aes(x = Outcome, y = Simulations)) +
+          geom_bar(stat = 'identity', fill = "#00BFC4") +
+          scale_x_discrete(labels=c("0" = "Above Threshold", "1" = "Below Threshold"))
+
+plot_4
+```
+
+
 

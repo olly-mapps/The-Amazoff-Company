@@ -8,6 +8,13 @@ output:
 
 Contained in this notebook is the product specific insurance simulation
 
+We first import libraries. These are only used for the plots, so it is not necessary for the simulation and extraction of output variables
+
+```{r}
+library(ggplot2)
+library(dplyr)
+```
+
 As required, we first set the seed to 0, for re-producability of our results.
 
 ```{r}
@@ -260,5 +267,22 @@ P
 ```
 We observe a probability of 0.523, just above half.
 
+# Plots 
 
+## Bar Plot
+
+We first rename column names to make visualization clearer
+
+```{r}
+value_count <- as.data.frame(value_count) %>% rename("Outcome" = B, "Simulations" = Freq)
+```
+
+```{r}
+plot_1 <- ggplot(data = value_count, aes(x = Outcome, y = Simulations)) +
+          geom_bar(stat = 'identity', fill = "#00BFC4") +
+          scale_x_discrete(labels=c("0" = "Above Threshold", "1" = "Below Threshold"))
+
+plot_1
+```
+## Distrubution 
 

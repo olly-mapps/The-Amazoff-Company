@@ -132,12 +132,6 @@ while (k < 3000) {
   #Number of arrivals by time t
   n_A <- 0
   
-  #Number of departures by time t
-  n_D <- 0
-  
-  #Number of claims by time t
-  n_C <- 0
-  
   #We run simulation for 12 months
   total_t <- 12
   
@@ -161,7 +155,7 @@ while (k < 3000) {
   t_A <- next_pois(t, lambda)
   
   #Define time of next departure
-  t_D <- Inf
+  t_D <- c(Inf)
   
   #Define list of next claims
   t_C <- c(Inf)
@@ -178,7 +172,7 @@ while (k < 3000) {
     
     #If there is arrival
       
-    if ((t_A <= t_D) & (all(t_A <= t_C))){
+    if ((all(t_A <= t_D)) & (all(t_A <= t_C))){
       
       #Set time to time of next arrival
       t <- t_A
@@ -196,27 +190,25 @@ while (k < 3000) {
       t_C[n_A] <- next_pois(t, (alpha/12))
       
       #On first iteration, we need to calculate next departure time
-      if (n_A == 1) {
-        t_D <- next_dep(t, lambda)
-      }
+      t_D[n_A] <- next_dep(t, lambda)
       
     }
     
     #If there is a departure
     
-    else if ((t_D < t_A) & all((t_D < t_C))) {
+    else if (any(t_D < t_A) & any(t_D < t_C)) {
       
       #Set time to time of next departure
-      t <- t_D
+      t <- min(t_D)
       
       #Subtract departure from system count
       n_0 <- n_0 - 1
       
-      #Add departure to departure count
-      n_D <- n_D + 1
-      
       #Calculate next departure
-      t_D <- next_dep(t, lambda)
+      t_D[which.min(t_D)] <- Inf
+      
+      t_C[which.min(t_D)] <- Inf
+
     }
     
     #If there is a claim
@@ -225,9 +217,6 @@ while (k < 3000) {
       
       #Set time to time of next claim
       t <- min(t_C)
-      
-      #Add one claim to claim count
-      n_C <- n_C+1
   
       #Generate next claim time
       t_C[which.min(t_C)] <- next_pois(t, (alpha/12))
@@ -250,6 +239,7 @@ while (k < 3000) {
         cost <- cost + pay_out
       }
     }
+    
   }
   
   ### Estimation Section ###
@@ -271,9 +261,9 @@ while (k < 3000) {
   S_sq <- out[2]
   
   #We then print this to assess convergence
-  #print(sqrt(S_sq/k))
+  print(sqrt(S_sq/k))
   
-  #We then check we have satisfied our requirements for confidence interval, the last condition ensures we     record only the first time we satisfy this requirement
+  #We then check we have satisfied our requirements for confidence interval, the last condition      ensures we record only the first time we satisfy this requirement
   
   if (sqrt(S_sq/k) < (500/1.645) & k != 1 & (C_12_90+k_90+S_sq_90 == 0)){
     
@@ -315,9 +305,9 @@ S_90 <- sqrt(S_sq_90/k_90)
 S_90
 ```
 
-So we on the 2538th iteration, we achieved our estimate of 27375.34. Our estimator has a standard deviation of 303.95.
+So we on the 2059th iteration, we achieved our estimate of 32412.96. Our estimator has a standard deviation of 303.8788.
 
-From here, we use the z-score of 1.96 to calculate an interval that we can be 95% our true value is in. With our standard deviation of 303.95, we find calculate 1.96*303.95. So our interval is +/- 595.06.
+From here, we use the z-score of 1.96 to calculate an interval that we can be 95% our true value is in. With our standard deviation of 303.8788, we find calculate 1.96*303.8788. So our interval is +/- 595.59.
 
 ## Plots
 

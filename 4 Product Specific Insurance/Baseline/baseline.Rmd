@@ -102,19 +102,13 @@ B <- c()
 
 for (k in 1:1000) {
   
-### Starting Parameters #################
+### Variables #################
   
   #Start at time 0
   t <- 0
     
   #Number of arrivals by time t
   n_A <- 0
-  
-  #Number of departures by time t
-  n_D <- 0
-  
-  #Number of claims by time t
-  n_C <- 0
   
   #We run simulation for 12 months
   total_t <- 12
@@ -139,7 +133,7 @@ for (k in 1:1000) {
   t_A <- next_pois(t, lambda)
   
   #Define time of next departure
-  t_D <- Inf
+  t_D <- c(Inf)
   
   #Define list of next claims
   t_C <- c(Inf)
@@ -157,7 +151,7 @@ for (k in 1:1000) {
     }
     
     #If there is arrival
-    if ((t_A <= t_D) & (all(t_A <= t_C))){
+    if ((all(t_A <= t_D)) & (all(t_A <= t_C))){
       
       #Set time to time of next arrival
       t <- t_A
@@ -175,26 +169,24 @@ for (k in 1:1000) {
       t_C[n_A] <- next_pois(t, (alpha/12))
       
       #On first iteration, we need to calculate next departure time
-      if (n_A == 1) {
-        t_D <- next_dep(t, lambda)
-      }
+      t_D[n_A] <- next_dep(t, lambda)
       
     }
     
     #If there is a departure
-    else if ((t_D < t_A) & all((t_D < t_C))) {
+    else if (any(t_D < t_A) & any(t_D < t_C)) {
       
       #Set time to time of next departure
-      t <- t_D
+      t <- min(t_D)
       
       #Subtract departure from system count
       n_0 <- n_0 - 1
       
-      #Add departure to departure count
-      n_D <- n_D + 1
-      
       #Calculate next departure
-      t_D <- next_dep(t, lambda)
+      t_D[which.min(t_D)] <- Inf
+      
+      t_C[which.min(t_D)] <- Inf
+
     }
     
     #If there is a claim
@@ -202,9 +194,6 @@ for (k in 1:1000) {
       
       #Set time to time of next claim
       t <- min(t_C)
-      
-      #Add one claim to claim count
-      n_C <- n_C+1
   
       #Generate next claim time
       t_C[which.min(t_C)] <- next_pois(t, (alpha/12))
@@ -239,7 +228,6 @@ for (k in 1:1000) {
     #If they are not, add a 0 to the list
     B <- c(B,0)
   }
-  
 }
 ```
 
@@ -265,7 +253,7 @@ P <- value_count[2] / length(B)
 #Output P
 P
 ```
-We observe a probability of 0.523, just above half.
+We observe a probability of 0.401, just above half.
 
 # Plots 
 
@@ -286,6 +274,8 @@ plot_1
 ```
 ## Bar Plot (M=400)
 
+Probability of legal issues = 0.086
+
 ```{r}
 value_count <- as.data.frame(value_count) %>% rename("Outcome" = B, "Simulations" = Freq)
 ```
@@ -301,6 +291,8 @@ plot_2
 
 ## Bar Plot (M=350)
 
+Probability of legal issues = 0.211
+
 ```{r}
 value_count <- as.data.frame(value_count) %>% rename("Outcome" = B, "Simulations" = Freq)
 ```
@@ -311,19 +303,6 @@ plot_3 <- ggplot(data = value_count, aes(x = Outcome, y = Simulations)) +
           scale_x_discrete(labels=c("0" = "Above Threshold", "1" = "Below Threshold"))
 
 plot_3
-```
-## Bar Plot (M=500)
-
-```{r}
-value_count <- as.data.frame(value_count) %>% rename("Outcome" = B, "Simulations" = Freq)
-```
-
-```{r}
-plot_4 <- ggplot(data = value_count, aes(x = Outcome, y = Simulations)) +
-          geom_bar(stat = 'identity', fill = "#00BFC4") +
-          scale_x_discrete(labels=c("0" = "Above Threshold", "1" = "Below Threshold"))
-
-plot_4
 ```
 
 

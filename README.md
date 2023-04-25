@@ -4,6 +4,5 @@ Modelling and Optimising the operations of the Amazoff Company
 
 To-Do:
 
-- Comment out AMPL and R
+- Update sim pseudo-code
 - Proof-read report
-- Sort out file structure

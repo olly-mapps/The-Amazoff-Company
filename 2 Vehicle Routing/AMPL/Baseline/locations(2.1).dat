@@ -1,4 +1,12 @@
+##################################################
+#Data File For Capacitated Model (2 Vehicle Routing)
+#
+#Defines locations of depot and composite customers
+##################################################
+
 data;
+
+#x coordinates
 
 param xpos := 
 
@@ -32,6 +40,7 @@ c60	7.29
 
 ;
 
+#y coordinates
 
 param ypos :=
 

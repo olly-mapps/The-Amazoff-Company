@@ -8,6 +8,9 @@ output:
 
 Contained in this notebook is the code used for generating the grid of potential locations, and clients.
 
+
+#Setting up
+
 As requested, we first set the set to 1, this allows reproducability in our code
 
 ```{r}
@@ -41,7 +44,7 @@ We now rename the rows for easier use in AMPL.
 row.names(f_y) <- paste0("f", 1:n_f)
 row.names(f_x) <- paste0("f", 1:n_f)
 
-#Prefix the row numbr with c, to indicate customer
+#Prefix the row numbers with c, to indicate customer
 row.names(c_y) <- paste0("c", 1:n_c)
 row.names(c_x) <- paste0("c", 1:n_c)
 ```

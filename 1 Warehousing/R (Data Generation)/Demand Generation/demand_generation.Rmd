@@ -8,11 +8,15 @@ output:
 
 Contained in this notebook is the generation of the demands 60 customers.
 
+# Setting up
+
 As required, we set the seed to 1, to allow for the reproducability of our results
 
 ```{r}
 set.seed(1)
 ```
+
+#Demand Generation
 
 We are required to generate 60 demands, drawn uniformly, between 1 and 25.
 

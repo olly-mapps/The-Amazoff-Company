@@ -8,70 +8,117 @@ output:
 
 Contained in this notebook is the product specific insurance simulation
 
-We first import libraries, which are only use in the visualisation of our results.
+# Setting up
+
+We first import libraries, which are only used in the visualisation of our results.
 
 ```{r}
 library(ggplot2)
 library(dplyr)
 ```
 
-As required, we first set the seed to 0, for re-producability of our results. 
+As required, we first set the seed to 1, for re-producability of our results. 
 
 ```{r}
 set.seed(1)
 ```
 
+
 # Function Definitions
 
+We define the following function to generate the next event time after t in a homogeneous Poisson process
+
 ```{r}
+#The function takes in current time t and intensity x
 next_pois <- function(t, x) {
+  
+  #Generates random uniform variable
   U <- runif(1)
+  
+  #Returns the next time, following formula for Poisson process
   return(t - (1/x) * log(U)) 
 }
 ```
 
+The next two functions are the building blocks for the non-homogeneous Poisson process. We first define mu_t to calculate the rate of the process, and next_dep generates the next time after t in the process.
+
 ```{r}
+#The function takes in current time t
 mu_t = function(t){
+  
+  #Calculates intensity using formula given in brief
   return(1/(t+12))
 }
 ```
 
 ```{r}
-next_dep <- function(t, lambda) {
+#The function takes in current time t and max possible mu
+next_dep <- function(t, mu) {
+  
+  #Sets flag for the while loop so it runs
   flag = 1
+  
   while(flag){
-    U1 <- runif(1)
-    t = t - (1/lambda) * log(U1)
     
+    #Generates random uniform variable
+    U1 <- runif(1)
+    
+    #Calculates next event time in process
+    t = t - (1/mu) * log(U1)
+    
+    #Generates a second random uniform variable
     U2 <- runif(1)
     
-    if (U2 <= mu_t(t)/lambda) {
+    #Calculates the rate, and checks if it satisfies requirement for non-homogeneous process
+    if (U2 <= mu_t(t)/mu) {
+      
+      #Sets time to t
       T_s <- t
+      
+      #Breaks while loop
       flag = 0
     }
   }
   
+  #Returns the calculated next event time t
   return (T_s)
 }
 ```
 
+We next define a function that allows us to track which months we are in. The function checks if the month is in our tracking list, and returns true if it inst, and false otherwise.
+
+
 ```{r}
+#Takes in current time and current month list
 new_month <- function(t, months) {
+  
+  #If the floor of the current t is not in the months list
   if (floor(t) %in% months) {
+    
+    #Returns false
     return(FALSE)
+    
   } else {
+    
+    #Returns true 
     return(TRUE)
   }
 }
 ```
 
+We next define a function to update the sample mean and variance. We use the formulas outlined in the lectures
+
 ```{r}
+#Takes in current iteration, current mean, current sample mean, current sample variance
 gen_sample_mean_var = function(n, Z, Z_bar, S_sq){
   
+  #Calculates new sample mean
   Z_bar_new = Z_bar + (Z-Z_bar)/(n+1)
   
+  #Calculates new sample variance
   S_sq_new = (1-(1/n))*S_sq + (n+1)*(Z_bar_new - Z_bar)^2
   
+  #Returns our calculated variables
   return(c(Z_bar_new,S_sq_new))
 }
 ```
@@ -83,6 +130,9 @@ We are first given some parameters, which are initialized below
 ```{r}
 #Monthly poisson process parameter for arrivals
 lambda <- 3
+
+#Monthly non-homogeneous Poisson process rate, since this is the max mu_t can attain
+mu <- 1/12
 
 #Yearly poisson process parameter for claims
 alpha <- 3.5
@@ -101,16 +151,21 @@ M <- 300
 ```{r}
 ### Output Variables ################################
 
-k_90 <- 0 
+#Output variable to record iteration at which we have our required estimator
+k_90 <- 0
+
+#Output variable to record the required estimate
 C_12_90 <- 0
+
+#Output variable to record the standard deviation of our estimator
 S_sq_90 <- 0
 
+#Defines list to record each C_12, used for plot
 capital_list <- c()
 
 ### Other Initialisations ############################
 
 #We need to initialise the first variance, that being 0
-
 S_sq <- 0
 
 #And the start of the counter
@@ -154,7 +209,7 @@ while (k < 3000) {
   #Define time of next arrival from Poisson process 
   t_A <- next_pois(t, lambda)
   
-  #Define time of next departure
+  #Define list of next departures
   t_D <- c(Inf)
   
   #Define list of next claims
@@ -164,14 +219,17 @@ while (k < 3000) {
 
   while(t <= total_t){
     
-    #Here we check we have not entered a new month yet
+    #Calculate whether we are in new month yet
     if (new_month(t, months)) {
+      
+      #If yes, then add month to list
       months <- c(months, floor(t))
+      
+      #then add monthly income to revenue
       rev <- rev + M*n_0
     }
     
     #If there is arrival
-      
     if ((all(t_A <= t_D)) & (all(t_A <= t_C))){
       
       #Set time to time of next arrival
@@ -186,16 +244,17 @@ while (k < 3000) {
       #Calculate next arrival time
       t_A <- next_pois(t, lambda)
       
-      #On first iteration, we now calculate time to next claim
+      #We calculate time to next claim for this customer
+      #We index the list by the number arrival they are
       t_C[n_A] <- next_pois(t, (alpha/12))
       
-      #On first iteration, we need to calculate next departure time
-      t_D[n_A] <- next_dep(t, lambda)
+      #we need to calculate next departure time for this customer
+      #We again index list by the number of arrival they are
+      t_D[n_A] <- next_dep(t, mu)
       
     }
     
     #If there is a departure
-    
     else if (any(t_D < t_A) & any(t_D < t_C)) {
       
       #Set time to time of next departure
@@ -204,24 +263,24 @@ while (k < 3000) {
       #Subtract departure from system count
       n_0 <- n_0 - 1
       
-      #Calculate next departure
+      #Set this customers departure time to infinity, since they have now left
       t_D[which.min(t_D)] <- Inf
       
+      #Set this customers next claim time to infinity, since they have now left
       t_C[which.min(t_D)] <- Inf
 
     }
     
     #If there is a claim
-    
     else if (any((t_C < t_A)) & any((t_C < t_D))){
       
       #Set time to time of next claim
       t <- min(t_C)
   
-      #Generate next claim time
+      #Generate next claim time for this customer
       t_C[which.min(t_C)] <- next_pois(t, (alpha/12))
       
-      ##Calculate pay-out 
+      ## Calculate pay-out ##
       
       #Generate random uniform variable
       pay_out_p <- runif(1)
@@ -242,14 +301,18 @@ while (k < 3000) {
     
   }
   
-  ### Estimation Section ###
+  ## Estimation of C_12 ##
   
-  #We first our simulated capital at the end of 12 months
+  #We first calculate our simulated capital at the end of 12 months
   C_12 <- (c_0 - cost + rev)
+  
+  #Add it to the list of C_12s
   capital_list <- c(capital_list, C_12)
   
   #If it is the first iteration, we set the sample mean to our first estimate
   if (k == 1){
+    
+    #Set it equal to the first calculated C_12
     C_12_bar <- C_12
   }
   
@@ -260,10 +323,11 @@ while (k < 3000) {
   C_12_bar <- out[1]
   S_sq <- out[2]
   
-  #We then print this to assess convergence
-  print(sqrt(S_sq/k))
+  #We then print this to assess convergence (Used only for diagnostics)
+  #print(sqrt(S_sq/k))
   
-  #We then check we have satisfied our requirements for confidence interval, the last condition      ensures we record only the first time we satisfy this requirement
+  #We then check we have satisfied our requirements for confidence interval, the last condition
+  #ensures we record only the first time we satisfy this requirement
   
   if (sqrt(S_sq/k) < (500/1.645) & k != 1 & (C_12_90+k_90+S_sq_90 == 0)){
     
@@ -294,6 +358,7 @@ where S is the standard deviation up until that iteration, and k is the iteratio
 We next estimate the capital we finish with, if we retrieve our output variable C_12
 
 ```{r}
+#Prints our output variables
 C_12_90
 k_90
 S_sq_90 
@@ -301,29 +366,39 @@ S_sq_90
 From here, we calculate our final standard deviation
 
 ```{r}
+#Calculates standard deviation
 S_90 <- sqrt(S_sq_90/k_90)
 S_90
 ```
 
-So we on the 2059th iteration, we achieved our estimate of 32412.96. Our estimator has a standard deviation of 303.8788.
+So we on the 2034th iteration, we achieved our estimate of 32585.55. Our estimator has a standard deviation of 303.8578.
 
-From here, we use the z-score of 1.96 to calculate an interval that we can be 95% our true value is in. With our standard deviation of 303.8788, we find calculate 1.96*303.8788. So our interval is +/- 595.59.
+From here, we use the z-score of 1.96 to calculate an interval that we can be 95% our true value is in. With our standard deviation of 303.8578, we find calculate 1.96*303.8578. So our interval is +/- 595.5612.
 
-## Plots
+## Distribution Visualisation 
 
-#Distribution Visualisation 
+We now wish to visual the distribution of C_12s using our capital_list
 
 ```{r}
+#First calculate frequencies at which each C_12 occurred
 freq <- data.frame(list(capital_list))
 ```
 
 ```{r}
+#Define plot
 plot_1 <- ggplot(freq, aes(x = capital_list)) +
+  
+    #Set to histogram and change colour
     geom_histogram(bins = 70, fill = "#00BFC4") +
+  
+    #Change axes labels
     xlab("Capital Stock at 12 Months") +
     ylab("Simulations") +
+  
+    #Add C line
     geom_vline(xintercept=30000)
 
+#Print plot
 plot_1
 ```
 

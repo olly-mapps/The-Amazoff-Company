@@ -1,4 +1,12 @@
+##################################################
+#Data File For Capacitated Model (1 Warehousing)
+#
+#Contains sets of customers and their demands, and facilities
+##################################################
+
 data; 
+
+#Set of customers
 
 set Customers := c1	c2	c3	c4	c5	c6	c7	c8	c9	c10	
 					c11	c12	c13	c14	c15	c16	c17	c18	c19	c20	
@@ -6,10 +14,12 @@ set Customers := c1	c2	c3	c4	c5	c6	c7	c8	c9	c10
 					c31	c32	c33	c34	c35	c36	c37	c38	c39	c40	
 					c41	c42	c43	c44	c45	c46	c47	c48	c49	c50	
 					c51	c52	c53	c54	c55	c56	c57	c58	c59	c60;
-	
+
+#Set of facilities
 set Facilities := f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13
 					f14 f15;
-					
+
+#Parameter defining demands for each customer				
 param demands :=
 c1	7
 c2	10

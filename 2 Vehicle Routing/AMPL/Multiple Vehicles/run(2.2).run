@@ -1,14 +1,28 @@
+##################################################
+#Run File For Baseline Model (2 Vehicle Routing)
+#
+#Solves the model
+##################################################
+
+#First resets environment
 reset;
 
+#Calls the model file
 model model(2.2).mod;
+
+#Calls necessary data files
 data data(2.2).dat;
 data locations(2.2).dat;
 
+#Allows for tracking of progress
 option cplex_options 'mipdisplay 3 mipgap 0.0005';
 
+#Sets solver to cplex
 option solver cplex;
 
+#Solves
 solve;
 
+#Outputs the variables of interest to an external text file.
 display Total_Cost, on_route > "out(2.2).txt";
 

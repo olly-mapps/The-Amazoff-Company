@@ -1,4 +1,12 @@
+##################################################
+#Data File For Capacitated Model (1 Warehousing)
+#
+#Contains coordinates for the customers
+##################################################
+
 data;
+
+#y coordinates
 
 param c_y :=
 c1	-0.36
@@ -63,6 +71,8 @@ c59	-5.09
 c60	-7.13
 
 ;
+
+#x coordinates
 
 param c_x :=
 c1	-5.21

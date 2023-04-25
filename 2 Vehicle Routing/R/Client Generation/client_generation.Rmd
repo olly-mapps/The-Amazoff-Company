@@ -10,6 +10,8 @@ Contained in this notebook are the generation of the 25 composite clients.
 
 As required we first set the seed to 1.
 
+# Setting up
+
 ```{r}
 set.seed(1)
 ```
@@ -37,12 +39,14 @@ composite_clients <- unique(composite_clients)
 ```
 
 We now manipulate our data for ease of usage in AMPL
+
 ```{r}
 #Paste c at the start of every entry in composite clients
 composite_clients <- paste0("c", composite_clients)
 ```
 
 We finally write to a csv file for later
+
 ```{r}
 write.csv(composite_clients, "client_data/clients.csv", row.names = T)
 ```

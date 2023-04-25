@@ -40,7 +40,7 @@ var facility {f in Facilities} binary;
 var assign {(i,j) in Arcs} binary;
 
 
-#############Objective################################
+#############Objective############################
 
 #Objective function minimising cost of assignments, and opening costs of facilities
 minimize Total_Cost:
@@ -48,7 +48,7 @@ minimize Total_Cost:
 	+ sum{f in Facilities} facility[f] * open_cost[f];
 
 
-#############Constraints##############################
+#############Constraints##########################
 
 subject to
 

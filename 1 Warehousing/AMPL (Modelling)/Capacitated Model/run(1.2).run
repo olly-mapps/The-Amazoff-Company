@@ -1,15 +1,29 @@
+##################################################
+#Run File For Capacitated Model (1 Warehousing)
+#
+#Solves the model
+##################################################
+
+#First resets environment
 reset; 
 
+#Calls the model file
 model model(1.2).mod;
+
+#Calls necessary data files
 data data(1.2).dat;
 data f_loc(1.2).dat;
 data c_loc(1.2).dat;
 
+#Allows for tracking of progress
 option cplex_options 'mipdisplay 3 mipgap 0.0005';
 
+#Sets solver to cplex
 option solver cplex;
 
+#Solves
 solve;
 
+#Outputs the variables of interest to an external text file.
 display facility, assign, Total_Cost > "out(1.2).txt";
 

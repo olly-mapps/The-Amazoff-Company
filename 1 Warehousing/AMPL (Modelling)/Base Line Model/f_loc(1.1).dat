@@ -1,4 +1,12 @@
+##################################################
+#Data File For Baseline Model (1 Warehousing)
+#
+#Contains coordinates for the facilities
+##################################################
+
 data;
+
+#y coordinates
 
 param f_y :=
 f1	-4.69
@@ -17,6 +25,8 @@ f13	3.74
 f14	-2.32
 f15	5.4
 ;
+
+#x coordinates
 
 param f_x := 
 f1	-0.05
